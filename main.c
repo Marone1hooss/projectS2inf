@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include<string.h>
 #include"sorting.h"
-
+#include"AVL.h"
 
 int main(int argc,char*argv)
 {
@@ -15,7 +15,14 @@ int main(int argc,char*argv)
 
     char ** listproj=(char**)malloc(M*sizeof(char*));
     for(int i=0;i<M;i++){listproj[i]=(char*)malloc(21*sizeof(char));}
+
+    char ** listskills0=(char**)malloc(N*10*sizeof(char*));
+    for(int i=0;i<N;i++){listskills0[i]=(char*)malloc(21*sizeof(char));}
+
+    strNode * root=NULL;
+    int S=0;//the number of skilles
     employee*employers=(employee*)malloc(N*sizeof(employee));
+
 
     for (int i =0;i<N;i++)
     {
@@ -43,15 +50,11 @@ int main(int argc,char*argv)
             testskill.level=level;
             testskill.skill=skillname;
             test1.skilles[j]=testskill;
+            if (strfindNode(root,skillname)==NULL){root=strinsertNode(root,skillname);listskills0[S]=skillname;S++;}
         }
         employers[i]=test1;
     }
-    for (int i=0;i<N;i++)
-{
 
-    printf("%s\n",devnames[i]);
-
-}
 
     project*projects=(project*)malloc(M*sizeof(project));
     for (int i =0;i<M;i++)
@@ -96,31 +99,77 @@ strmergeSort(listproj,0,M-1);
 for (int i=0;i<N;i++)
 {
     employers[i].id=strbinarySearch(devnames,0,N-1, employers[i].name);
-    
 }
+
+employee*employers1=(employee*)malloc(N*sizeof(employee));
+for(int i=0;i<N;i++)
+{
+    employers1[employers[i].id]=employers[i];
+}
+free(employers);
+employers=employers1;
+
 for (int i=0;i<M;i++)
 {
     projects[i].id=strbinarySearch(listproj,0,M-1 , projects[i].name);
     projects[i].grad=grade(projects[i],0);
 }
+
+
+//sorting the skilles 
+char ** listskills=(char**)malloc(S*sizeof(char*));
+for(int i=0;i<S;i++){listskills[i]=(char*)malloc(21*sizeof(char));listskills[i]=listskills0[i];}
+free(listskills0);
+strfreeTree(root);
+strmergeSort(listskills,0,S-1);
+
+SkillNode **skilltree=(SkillNode**)malloc(S*sizeof(SkillNode**));
+
+for(int i=0;i<N;i++)
+{
+    skill*list=employers[i].skilles;
+    int n=employers[i].nskils;
+    for(int j;j<n;j++)
+    {
+        int ip=strbinarySearch(listskills,0,S-1,list[j].skill);
+        SkillNode * root=skilltree[ip];
+        skilltree[ip]=insertSkillNode(root,i,list[j].level);
+      
+    }
+}
+
 prjmergeSort(projects,0,M-1);
 
-for (int i=0;i<M;i++)
+for(int p=0;p<M;p++)
 {
-    printf("%s\n",projects[i].name);
-    printf("%d\n",projects[i].grad);
-    printf("%d\n",projects[i].id);
+    project prj0=projects[p];
+    int days=prj0.days;
+    skill* arr=prj0.requirement;
+    for(int i=0;i<prj0.numbre_of_employeres;i++)
+    {
+        char*skill=arr[i].skill;
+        int lvl=arr[i].level;
+        int ip=strbinarySearch(listskills,0,S-1,skill);
+        SkillNode*root=skilltree[ip];
+        SkillNode*target=findSkillNode(root,lvl);
+        if (target!=NULL)
+        {
+            employers[target->id].worktime+=days;
+        }
+        else 
+        {
+            target=findvalide(root,lvl);
+            if (target==NULL) break;
+            else employers[target->id].worktime+=days; 
+        }
+
+    }
+
 }
 
-int day=0;
-/* while(true)
-{
-
-}
- */
 
 
-/// freee everything !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// freee everything !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 /* 3 3

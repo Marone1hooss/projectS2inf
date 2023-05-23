@@ -12,6 +12,7 @@ typedef struct employee
     int id;
     char*name;
     int nskils;
+    int worktime;
     skill * skilles;
 }employee;
 
@@ -26,6 +27,13 @@ typedef struct project
     skill* requirement;
     int grad;
 }project;
+
+typedef struct delevered
+{ 
+    int prjID;
+    int* devIDs;
+} delevered;
+ 
 
 void intmergeSort(int arr[], int left, int right);
 void strmergeSort(char **arr, int left, int right) ;

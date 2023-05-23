@@ -4,6 +4,8 @@
 #include<string.h>
 #include"sorting.h"
 
+
+
 void prjmerge(project* arr, int left, int mid, int right) {
     int i, j, k;
     int n1 = mid - left + 1;
@@ -201,7 +203,7 @@ int min(int a,int b)
     else return b;
 }
 
-int max(int a,int b)
+int Max(int a,int b)
 {
     if (a>b) return a;
     else return b;
@@ -212,7 +214,7 @@ int grade(project prj,int time)
     int d=prj.days;
     int n=prj.numbre_of_employeres;
     int best=prj.best_befor;
-    int s=min(prj.score,max(0,prj.score+best-(time+d)));
+    int s=min(prj.score,Max(0,prj.score+best-(time+d)));
     int grade=s/(n*d);
     return grade;
 }

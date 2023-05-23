@@ -1,6 +1,7 @@
 #-*-Makefile-*-
 SRCS = main.c \
 	  sorting.c \
+	  AVL.c \
 
 OBJS = ${SRCS:%.c=%.o}
 
@@ -12,15 +13,11 @@ ${NAME}: ${OBJS}
 
 #Compilation step:
 
-%.o: %.c math.h
+%.o: %.c sorting.h AVL.h
 	gcc -c $< -o $@
 
-#main:main.o sorting.o
-#	gcc main.o sorting.o -o main
-#main.o:main.c sorting.h
-#	gcc -c main.c
-#sorting.o:sorting.c sorting.h
-#	gcc -c sorting.c*/
+run: 
+	main 
 
 clean:
 	rm -f *.o  main
