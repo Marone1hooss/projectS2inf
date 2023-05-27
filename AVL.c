@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "sorting.h"
 typedef struct Node {
     char* key;
     struct Node* left;
@@ -313,15 +313,23 @@ SkillNode* findSkillNode(SkillNode* node, int lvl) {
         return findSkillNode(node->right, lvl);
 }
 
-SkillNode* findvalide(SkillNode* node, int lvl) {
-    if (node == NULL || node->lvl == lvl)
+SkillNode* findvalide(SkillNode* node, int lvl,employee*employers,int Time )
+{
+    if (node == NULL )
         return node;
+    if( node->lvl == lvl && employers[node->id].available<Time)
+        return node;
+    if (lvl < node->lvl &&(employers[node->id].available<Time))
+        if ( node->left==NULL)
+            return node;
+        else if (node->left->lvl<lvl)
+            return node;
 
-    if (lvl < node->lvl && lvl > node->left->lvl || lvl < node->lvl && node->left==NULL)
-        return node;
-    else if (lvl < node->lvl)
-        return findvalide(node->left, lvl);
-    else
-        return findvalide(node->right, lvl);
+
+    if (lvl < node->lvl)
+        return findvalide(node->left, lvl, employers,Time);
+    if (lvl >= node->lvl)
+        return findvalide(node->right, lvl,employers,Time);
+    
 }
 

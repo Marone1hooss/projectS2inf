@@ -14,7 +14,7 @@ ${NAME}: ${OBJS}
 #Compilation step:
 
 %.o: %.c sorting.h AVL.h
-	gcc -c $< -o $@
+	gcc -Wall -Wextra -g -c $< -o $@
 
 run: 
 	main 

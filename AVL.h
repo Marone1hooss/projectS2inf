@@ -1,4 +1,10 @@
 
+
+
+
+
+
+
 typedef struct Node0 {
     char* key;
     struct Node0* left;
@@ -30,4 +36,4 @@ SkillNode* findSkillNode(SkillNode* node, int lvl);
 SkillNode* insertSkillNode(SkillNode* node, int id, int lvl);
 void sklinOrderTraversal(SkillNode* node);
 void freeSkillTree(SkillNode* node);
-SkillNode* findvalide(SkillNode* node, int lvl);
+SkillNode* findvalide(SkillNode* node, int lvl,employee*employers,int Time);

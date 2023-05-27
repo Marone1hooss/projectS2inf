@@ -12,7 +12,7 @@ typedef struct employee
     int id;
     char*name;
     int nskils;
-    int worktime;
+    int available;
     skill * skilles;
 }employee;
 
@@ -26,6 +26,7 @@ typedef struct project
     int numbre_of_employeres;
     skill* requirement;
     int grad;
+    int delevered;
 }project;
 
 typedef struct delevered
