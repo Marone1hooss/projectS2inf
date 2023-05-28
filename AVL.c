@@ -256,7 +256,7 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl) {
 
     if (lvl < node->lvl)
         node->left = insertSkillNode(node->left, id, lvl);
-    else if (lvl > node->lvl)
+    else if (lvl >= node->lvl)
         node->right = insertSkillNode(node->right, id, lvl);
     else
         return node;
@@ -313,23 +313,39 @@ SkillNode* findSkillNode(SkillNode* node, int lvl) {
         return findSkillNode(node->right, lvl);
 }
 
-SkillNode* findvalide(SkillNode* node, int lvl,employee*employers,int Time )
+unsigned long  int employeegrade(SkillNode*node,int lvl,employee*employers)
 {
-    if (node == NULL )
-        return node;
-    if( node->lvl == lvl && employers[node->id].available<Time)
-        return node;
-    if (lvl < node->lvl &&(employers[node->id].available<Time))
-        if ( node->left==NULL)
-            return node;
-        else if (node->left->lvl<lvl)
-            return node;
-
-
-    if (lvl < node->lvl)
-        return findvalide(node->left, lvl, employers,Time);
-    if (lvl >= node->lvl)
-        return findvalide(node->right, lvl,employers,Time);
-    
+    if (node==NULL) return 10000000000;
+    return employers[node->id].nskils*(node->lvl-lvl+1);
 }
+
+
+SkillNode* best_condidate(SkillNode* node, int lvl,employee*employers,int Time )
+{
+if (node==NULL) return NULL;
+
+if (lvl > node->lvl) return best_condidate(node->right,lvl,employers,Time);
+
+else 
+{
+    unsigned long int a=employeegrade(best_condidate(node->right,lvl,employers,Time),lvl,employers);
+    unsigned long int b=employeegrade(best_condidate(node->left,lvl,employers,Time),lvl,employers);
+    unsigned long int c;
+    if (employers[node->id].available<Time)   
+    {
+        c=employeegrade(node,lvl,employers);
+        if (a<=b && a<=c) return best_condidate(node->right,lvl,employers,Time);
+        if (c<=b && c<=a) return node;
+        if (b<=a && b<=c) return best_condidate(node->left,lvl,employers,Time);
+    }
+    else 
+    {
+        if (a<b) return best_condidate(node->right,lvl,employers,Time);
+        else if (b<a) return best_condidate(node->left,lvl,employers,Time);
+        else return NULL;
+    }
+}
+
+}
+
 

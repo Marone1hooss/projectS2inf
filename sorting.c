@@ -209,13 +209,14 @@ int Max(int a,int b)
     else return b;
 }
 
-int grade(project prj,int time)
+double grade(project prj,int time)
 {
+    if (prj.delevered == 1) return -1;
     int d=prj.days;
     int n=prj.numbre_of_employeres;
     int best=prj.best_befor;
     int s=min(prj.score,Max(0,prj.score+best-(time+d)));
-    int grade=s/(n*d);
-    return grade;
+    float grade=s/(n*d);
+    return ((int)(grade*1000))/1000;
 }
 
