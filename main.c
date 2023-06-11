@@ -7,8 +7,21 @@
 
 int main(int argc,char*argv)
 {
+ 
+FILE *fl;
+
+
+fl = fopen("input3.txt","r");
+
+if(fl == NULL)
+   {
+      printf("Error!");   
+      exit(1);             
+   }
+
+
 int N,M;
-scanf("%d %d",&N,&M);
+fscanf(fl,"%d %d",&N,&M);
 
 char ** devnames=(char**)malloc(N*sizeof(char*));
 for(int i=0;i<N;i++){devnames[i]=(char*)malloc(21*sizeof(char));}
@@ -28,8 +41,8 @@ for (int i =0;i<N;i++)
 {
     char name[21];
     int n;
-    scanf("%s",name);
-    scanf("%d",&n);
+    fscanf(fl,"%s",name);
+    fscanf(fl,"%d",&n);
 
     for (int k=0;k<20+1;k++)
     {
@@ -47,8 +60,8 @@ for (int i =0;i<N;i++)
     {
         char *skillname=(char*)malloc(21*sizeof(char));
         int level;
-        scanf("%s",skillname);
-        scanf("%d",&level);
+        fscanf(fl,"%s",skillname);
+        fscanf(fl,"%d",&level);
         skill testskill;
         testskill.level=level;
         for(int b=0;b<strlen(skillname)+1;b++){test1.strskills[j][b]=skillname[b]; }
@@ -90,11 +103,11 @@ for (int i =0;i<M;i++)
 {
     char *name=(char*)malloc(21*sizeof(char));
     int days,score,bestb,nofemp;
-    scanf("%s",name);
-    scanf("%d",&days);
-    scanf("%d",&score);
-    scanf("%d",&bestb);
-    scanf("%d",&nofemp);
+    fscanf(fl,"%s",name);
+    fscanf(fl,"%d",&days);
+    fscanf(fl,"%d",&score);
+    fscanf(fl,"%d",&bestb);
+    fscanf(fl,"%d",&nofemp);
         for (int k=0;k<20+1;k++)
     {
         listproj[i][k]=name[k];
@@ -113,8 +126,8 @@ for (int i =0;i<M;i++)
     {
         char* skillname=(char*)malloc(21*sizeof(char));
         int level;
-        scanf("%s",skillname);
-        scanf("%d",&level);
+        fscanf(fl,"%s",skillname);
+        fscanf(fl,"%d",&level);
         skill testskill;
         testskill.level=level;
         testskill.skill=strbinarySearch(listskills,0,S-1,skillname);
@@ -169,7 +182,6 @@ for(int i=0;i<N;i++)
 
 delevered*deleveredprojects=(delevered*)malloc(M*sizeof(delevered));//A list of delevered projects
 int D=0;//The number deleveres projects
-
 int Time=0;//the numbere /of days 
 while(true)
 {

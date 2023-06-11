@@ -216,7 +216,7 @@ double grade(project prj,int time)
     int n=prj.numbre_of_employeres;
     int best=prj.best_befor;
     int s=min(prj.score,Max(0,prj.score+best-(time+d)));
-    float grade=s/(n*d);
+    float grade=s/(n*n*d);
     return ((int)(grade*1000))/1000;
 }
 

@@ -225,9 +225,9 @@ SkillNode* sklcreateSkillNode(int id, int lvl) {
 }
 
 SkillNode* sklrotateRight(SkillNode* y) {
+
     SkillNode* x = y->left;
     SkillNode* T2 = x->right;
-
     x->right = y;
     y->left = T2;
 
@@ -270,11 +270,11 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl) {
         return sklrotateRight(node);
 
     // Right Right Case
-    if (balance < -1 && lvl > node->right->lvl)
+    if (balance < -1 && lvl >= node->right->lvl)
         return sklrotateLeft(node);
 
     // Left Right Case
-    if (balance > 1 && lvl > node->left->lvl) {
+    if (balance > 1 && lvl >= node->left->lvl) {
         node->left = sklrotateLeft(node->left);
         return sklrotateRight(node);
     }
