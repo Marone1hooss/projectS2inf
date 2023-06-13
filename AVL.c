@@ -258,6 +258,10 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl) {
         node->left = insertSkillNode(node->left, id, lvl);
     else if (lvl >= node->lvl)
         node->right = insertSkillNode(node->right, id, lvl);
+/*     else if (lvl == node->lvl)
+        if(id > node->id)
+            node->right = insertSkillNode(node->right, id, lvl);
+        else  node->right = insertSkillNode(node->left, id, lvl); */
     else
         return node;
 
@@ -309,39 +313,41 @@ SkillNode* findSkillNode(SkillNode* node, int lvl) {
 
     if (lvl < node->lvl)
         return findSkillNode(node->left, lvl);
-    else
+    else 
         return findSkillNode(node->right, lvl);
 }
 
 unsigned long  int employeegrade(SkillNode*node,int lvl,employee*employers)
 {
     if (node==NULL) return 10000000000;
-    return employers[node->id].nskils*(node->lvl-lvl+1);
+    return employers[node->id].nskils*(node->lvl-lvl);
 }
 
 
-SkillNode* best_condidate(SkillNode* node, int lvl,employee*employers,int Time )
+SkillNode* best_condidate(SkillNode* node, int lvl,employee*employers,int Time,int*availableat)
 {
 if (node==NULL) return NULL;
 
-if (lvl > node->lvl) return best_condidate(node->right,lvl,employers,Time);
+if (lvl > node->lvl) return best_condidate(node->right,lvl,employers,Time,availableat);
 
 else 
 {
-    unsigned long int a=employeegrade(best_condidate(node->right,lvl,employers,Time),lvl,employers);
-    unsigned long int b=employeegrade(best_condidate(node->left,lvl,employers,Time),lvl,employers);
+    SkillNode*right=best_condidate(node->right,lvl,employers,Time,availableat);
+    SkillNode*left=best_condidate(node->left,lvl,employers,Time,availableat);
+    unsigned long int a=employeegrade(right,lvl,employers);
+    unsigned long int b=employeegrade(left,lvl,employers);
     unsigned long int c;
-    if (employers[node->id].available<Time)   
+    if (availableat[node->id] <= Time)   
     {
         c=employeegrade(node,lvl,employers);
-        if (a<=b && a<=c) return best_condidate(node->right,lvl,employers,Time);
+        if (a<=b && a<=c) return right;
         if (c<=b && c<=a) return node;
-        if (b<=a && b<=c) return best_condidate(node->left,lvl,employers,Time);
+        if (b<=a && b<=c) return left;
     }
     else 
     {
-        if (a<b) return best_condidate(node->right,lvl,employers,Time);
-        else if (b<a) return best_condidate(node->left,lvl,employers,Time);
+        if (a<b) return right;
+        else if (b<a) return left;
         else return NULL;
     }
 }
@@ -349,3 +355,64 @@ else
 }
 
 
+SkillNode* skillDeleteNode(SkillNode* root, int lvl,int id) {
+
+    if (root == NULL)
+        return root;
+
+    if (lvl < root->lvl)
+        root->left = skillDeleteNode(root->left,lvl,id);
+
+    else if (lvl>root->lvl)
+        root->right = skillDeleteNode(root->right,lvl,id);
+
+    else if (lvl==root->lvl && id > root->id)
+        root->right = skillDeleteNode(root->right,lvl,id);
+    else if (lvl==root->lvl && id < root->id)
+        root->right =skillDeleteNode(root->left,lvl,id);
+    else {
+        if ((root->left == NULL) || (root->right == NULL)) {
+            SkillNode* temp = root->left ? root->left : root->right;
+            if (temp == NULL) {
+                temp = root;
+                root = NULL;
+            } else
+                *root = *temp;
+            free(temp);
+        } else {
+            SkillNode* temp = root->right;
+            while (temp->left != NULL)
+                temp = temp->left;
+
+            root->id = temp->id;
+            root->lvl = temp->lvl;
+
+            root->right = skillDeleteNode(root->right,lvl,temp->id);
+        }
+    }
+
+    if (root == NULL)
+        return root;
+
+    root->height = 1 + max(sklgetHeight(root->left), sklgetHeight(root->right));
+
+    int balance = sklgetBalance(root);
+
+    if (balance > 1 && sklgetBalance(root->left) >= 0)
+        return sklrotateRight(root);
+
+    if (balance > 1 && sklgetBalance(root->left) < 0) {
+        root->left = sklrotateLeft(root->left);
+        return sklrotateRight(root);
+    }
+
+    if (balance < -1 && sklgetBalance(root->right) <= 0)
+        return sklrotateLeft(root);
+
+    if (balance < -1 && sklgetBalance(root->right) > 0) {
+        root->right = sklrotateRight(root->right);
+        return sklrotateLeft(root);
+    }
+
+    return root;
+}

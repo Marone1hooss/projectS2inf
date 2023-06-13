@@ -1,5 +1,4 @@
 
-
 typedef struct Node0 {
     char* key;
     struct Node0* left;
@@ -20,7 +19,7 @@ strNode* strfindNode(strNode* node, char* key);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct SkillNode {
-    int id;
+    int id;//the id of the devlopere
     int lvl;
     struct SkillNode* left;
     struct SkillNode* right;
@@ -32,6 +31,5 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl);
 void sklinOrderTraversal(SkillNode* node);
 void freeSkillTree(SkillNode* node);
 SkillNode* findvalide(SkillNode* node, int lvl,employee*employers,int Time);
-SkillNode* best_condidate(SkillNode* node, int lvl,employee*employers,int Time );
-
-
+SkillNode* best_condidate(SkillNode* node, int lvl,employee*employers,int Time,int*availabeleat);
+SkillNode* skillDeleteNode(SkillNode* root, int lvl,int id);
