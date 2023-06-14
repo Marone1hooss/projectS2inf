@@ -11,7 +11,7 @@ int main(int argc,char*argv)
 FILE *fl;
 
 
-fl = fopen("input1.txt","r");
+fl = fopen("input2exp.txt","r");
 
 if(fl == NULL)
    {
@@ -19,7 +19,7 @@ if(fl == NULL)
       exit(1);             
    }
 
-
+long long int SC=0;
 int N,M;
 fscanf(fl,"%d %d",&N,&M);
 
@@ -107,10 +107,11 @@ for (int i =0;i<M;i++)
     fscanf(fl,"%d",&score);
     fscanf(fl,"%d",&bestb);
     fscanf(fl,"%d",&nofemp);
-        for (int k=0;k<20+1;k++)
+    for (int k=0;k<20+1;k++)
     {
         listproj[i][k]=name[k];
     }
+    SC+=score;
 
     project test1;
     test1.name=(char*)malloc(strlen(name)*sizeof(char)+1);
@@ -132,6 +133,7 @@ for (int i =0;i<M;i++)
         testskill.skill=strbinarySearch(listskills,0,S-1,skillname);
         test1.requirement[j]=testskill;
     }
+    sklmergeSort(test1.requirement,0,test1.numbre_of_employeres-1);
     projects[i]=test1;
 }
 strmergeSort(devnames,0,N-1);
@@ -190,44 +192,60 @@ for (int k=0;k<N;k++) availableat[k]=-1;
 
 while(true)
 {
-    for (int k=0;k<M;k++)
+   for (int k=0;k<M;k++)
     {
         projects[k].grad=grade(projects[k],Time);
     }
-    prjmergeSort(projects,0,M-1);
+    prjmergeSort(projects,0,M-1); 
     if (projects[0].grad==0) break;
     if (projects[0].delevered!=0) break;
     for(int p=0;p<M;p++)
     {
         int*mentorship=malloc(S*sizeof(int));
         for(int k=0;k<S;k++) mentorship[k]=0;
-    
         project prj0=projects[p];
         if (prj0.delevered!=0) break ;
         int days=prj0.days;
         skill* arr=prj0.requirement;
         int n=prj0.numbre_of_employeres;
         delevered test;
-        test.prjID=p;
+        test.prjID=strbinarySearch(listproj,0,M-1,prj0.name);
         test.devIDs=(int *)malloc(n*sizeof(int));
         test.ndev=n;
+        mentored upgrade[N];
+        int u=0;//counter of the number of employeres how will upgrade there lvl
         int c=0;//counter 
         for(int i=0;i<n;i++)
         {
+            int mentorbool=0;//if the skill can be mentored
             int ip=arr[i].skill;
             int lvl=arr[i].level;
 
             if (mentorship[ip]>=lvl)
-                lvl-=1;
+                {mentorbool=1;
+                lvl-=1;}
             SkillNode*root=skilltree[ip];
             SkillNode *org=best_condidate(root,lvl,employers,Time,availableat);
             if (org==NULL) break;
             SkillNode target=*org;
-            if (target.lvl==lvl) 
+
+            if (mentorbool==1)
             {
-                skilltree[ip]= skillDeleteNode(skilltree[ip],target.lvl,target.id);
-                skilltree[ip]= insertSkillNode(skilltree[ip],target.id,lvl+1);
-            }    
+                if (target.lvl==lvl || target.lvl==lvl+1)
+                {
+                    upgrade[u].id=target.id;
+                    upgrade[u].ip=ip;
+                    upgrade[u].lvl=target.lvl;
+                    u++;
+                }
+            }
+            else if (target.lvl==lvl)
+            {
+                upgrade[u].id=target.id;
+                upgrade[u].ip=ip;
+                upgrade[u].lvl=target.lvl;
+                u++;   
+            }
             for (int k=0;k<employers[target.id].nskils;k++)
             {
                 int a=employers[target.id].skilles[k].skill;//the id of the skill
@@ -244,6 +262,11 @@ while(true)
             {
                 availableat[test.devIDs[k]]=Time+days;
             }
+            for(int k=0;k<u;k++)
+            {
+                skilltree[upgrade[k].ip]= skillDeleteNode(skilltree[upgrade[k].ip],upgrade[k].lvl,upgrade[k].id);
+                skilltree[upgrade[k].ip]= insertSkillNode(skilltree[upgrade[k].ip],upgrade[k].id,upgrade[k].lvl+1);
+            }
             projects[p].delevered=1;
             deleveredprojects[D]=test;
             finale_score += min(prj0.score,prj0.score+prj0.best_befor-(Time+prj0.days));
@@ -251,7 +274,14 @@ while(true)
         }
         free(mentorship);
     }
-    Time++;
+    int  min=1000000000;
+    for (int i=0;i<N;i++)
+    {
+        if ( min > availableat[i] && availableat[i] >= Time+1)
+            min=availableat[i];
+    }
+    if (min==1000000000) min =Time+1;
+    Time=min ;
 }
 /* for(int k=0;k<D;k++)
 {
@@ -260,8 +290,9 @@ while(true)
     {
         printf("%s\n",devnames[deleveredprojects[k].devIDs[n]]);
     }
-} */
+}   */
 printf("%d\n",finale_score);
+printf("%lld",SC);
 
 // freee everything !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 return 0;

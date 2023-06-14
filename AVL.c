@@ -256,12 +256,12 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl) {
 
     if (lvl < node->lvl)
         node->left = insertSkillNode(node->left, id, lvl);
-    else if (lvl >= node->lvl)
+    else if (lvl > node->lvl)
         node->right = insertSkillNode(node->right, id, lvl);
-/*     else if (lvl == node->lvl)
+     else if (lvl == node->lvl)
         if(id > node->id)
             node->right = insertSkillNode(node->right, id, lvl);
-        else  node->right = insertSkillNode(node->left, id, lvl); */
+        else  node->right = insertSkillNode(node->left, id, lvl); 
     else
         return node;
 

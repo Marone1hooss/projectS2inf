@@ -3,6 +3,66 @@
 #include <stdbool.h>
 #include<string.h>
 #include"sorting.h"
+void sklmerge(skill* arr, int left, int mid, int right) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    // Create temporary arrays
+    //project* L=(project*)malloc(n1*sizeof(project));
+    //project* R=(project*)malloc(n2*sizeof(project));
+    skill L[n1];
+    skill R[n2];
+    
+    // Copy data to temporary arrays
+    for (i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+    
+    // Merge the temporary arrays back into arr
+    i = 0;
+    j = 0;
+    k = left;
+    
+    while (i < n1 && j < n2) {
+        if (L[i].level <= R[j].level) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    
+    // Copy the remaining elements of L[], if any
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    // Copy the remaining elements of R[], if any
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void sklmergeSort(skill* arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        // Sort first and second halves
+        sklmergeSort(arr, left, mid);
+        sklmergeSort(arr, mid + 1, right);
+        
+        // Merge the sorted halves
+        sklmerge(arr, left, mid, right);
+    }
+}
 
 
 
@@ -216,7 +276,7 @@ long long int grade(project prj,int time)
     int n=prj.numbre_of_employeres;
     int best=prj.best_befor;
     int s=min(prj.score,Max(0,prj.score+best-(time+d)));
-    float grade=s/n*d*n;
+    float grade=10/(n);
     return ((long long int)(grade*10000));
 }
 
