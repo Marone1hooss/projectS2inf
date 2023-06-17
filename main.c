@@ -11,7 +11,7 @@ int main(int argc,char*argv)
 FILE *fl;
 
 
-fl = fopen("input2exp.txt","r");
+fl = fopen("input4.txt","r");
 
 if(fl == NULL)
    {
@@ -133,7 +133,7 @@ for (int i =0;i<M;i++)
         testskill.skill=strbinarySearch(listskills,0,S-1,skillname);
         test1.requirement[j]=testskill;
     }
-    sklmergeSort(test1.requirement,0,test1.numbre_of_employeres-1);
+    //sklmergeSort(test1.requirement,0,test1.numbre_of_employeres-1);
     projects[i]=test1;
 }
 strmergeSort(devnames,0,N-1);
@@ -161,25 +161,6 @@ for (int i=0;i<M;i++)
     projects[i].id=strbinarySearch(listproj,0,M-1 , projects[i].name);
     projects[i].grad=grade(projects[i],0);
 }
-
-/* SkillNode **skilltree=(SkillNode**)malloc(S*sizeof(SkillNode**));
-
-for(int k=0;k<S;k++){
-    skilltree[k]=NULL;
-}
-
-for(int i=0;i<N;i++)
-{
-    skill*list=employers[i].skilles;
-    int n=employers[i].nskils;
-    for(int j=0;j<n;j++)
-    {
-        int ip=list[j].skill;
-        SkillNode * root=skilltree[ip];
-        root=insertSkillNode(root,i,list[j].level);
-        skilltree[ip]=root;
-    }
-}  */
 
 int * number_of_developers=(int*)malloc(S*sizeof(int));//an array that stores the number of developeres for each skill
 for (int k=0;k<S;k++) number_of_developers[k]=0;
@@ -226,7 +207,7 @@ for (int k=0;k<N;k++) availableat[k]=-1;
 //for (int k=0;k<M;k++) printf("%lld ",projects[k].grad);
 while(true)
 {
-    if(breakpoint==2000) break;
+    if(breakpoint==10) break;
    for (int k=0;k<M;k++)
     {
         projects[k].grad=grade(projects[k],Time);
@@ -339,7 +320,7 @@ printf("%d\n",finale_score);
 printf("%lld\n",SC);
 
 
-int *testavailable=(int *)malloc(N*sizeof(int));
+/* int *testavailable=(int *)malloc(N*sizeof(int));
 for (int k=0;k<N;k++) testavailable[k]=-1;
 for (int i=0;i<D;i++)
 {
@@ -358,7 +339,7 @@ for (int i=0;i<D;i++)
             }
         }
     }
-} 
+}  */
 
 
 
