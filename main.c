@@ -11,7 +11,7 @@ int main(int argc,char*argv)
 FILE *fl;
 
 
-fl = fopen("input4.txt","r");
+fl = fopen("input3.txt","r");
 
 if(fl == NULL)
    {
@@ -174,7 +174,7 @@ for (int k=0;k<N;k++)
 dev** globalskills=(dev**)malloc(S*sizeof(dev*));//an array of arrays that store foe each skill all the contributeres that have this skill
 for (int k=0;k<S;k++)
 {
-    globalskills[k]=(dev*)malloc(number_of_developers[k]*sizeof(dev));
+    globalskills[k]=(dev*)malloc(N*sizeof(dev));
 }
 int*temp=(int*)malloc(S*sizeof(int));//an array  that keeps track of the lenth of each array of the skills
 for(int j=0;j<S;j++) temp[j]=0;
@@ -207,7 +207,7 @@ for (int k=0;k<N;k++) availableat[k]=-1;
 //for (int k=0;k<M;k++) printf("%lld ",projects[k].grad);
 while(true)
 {
-    if(breakpoint==10) break;
+    if(breakpoint==200) break;
    for (int k=0;k<M;k++)
     {
         projects[k].grad=grade(projects[k],Time);
