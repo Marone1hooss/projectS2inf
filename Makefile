@@ -13,7 +13,7 @@ ${NAME}: ${OBJS}
 
 #Compilation step:
 
-%.o: %.c sorting.h AVL.h
+%.o: %.c sorting.h AVL.h 
 	gcc  -g -c $< -o $@
 
 run: 

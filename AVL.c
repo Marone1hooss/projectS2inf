@@ -269,7 +269,7 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl) {
 
     int balance = sklgetBalance(node);
 
-    // Left Left Case
+/*     // Left Left Case
     if (balance > 1 && lvl < node->left->lvl)
         return sklrotateRight(node);
 
@@ -287,7 +287,23 @@ SkillNode* insertSkillNode(SkillNode* node, int id, int lvl) {
     if (balance < -1 && lvl < node->right->lvl) {
         node->right = sklrotateRight(node->right);
         return sklrotateLeft(node);
+    } */
+        if (balance > 1 && sklgetBalance(node->left) >= 0)
+        return sklrotateRight(node);
+
+    if (balance > 1 && sklgetBalance(node->left) < 0) {
+        node->left = sklrotateLeft(node->left);
+        return sklrotateRight(node);
     }
+
+    if (balance < -1 && sklgetBalance(node->right) <= 0)
+        return sklrotateLeft(node);
+
+    if (balance < -1 && sklgetBalance(node->right) > 0) {
+        node->right = sklrotateRight(node->right);
+        return sklrotateLeft(node);
+    }
+
 
     return node;
 }
@@ -317,7 +333,7 @@ SkillNode* findSkillNode(SkillNode* node, int lvl) {
         return findSkillNode(node->right, lvl);
 }
 
-unsigned long  int employeegrade(SkillNode*node,int lvl,employee*employers)
+/* unsigned long  int employeegrade(SkillNode*node,int lvl,employee*employers)
 {
     if (node==NULL) return 10000000000;
     return employers[node->id].nskils*(node->lvl-lvl);
@@ -333,10 +349,12 @@ if (lvl > node->lvl) return best_condidate(node->right,lvl,employers,Time,availa
 else 
 {
     SkillNode*right=best_condidate(node->right,lvl,employers,Time,availableat);
-    SkillNode*left=best_condidate(node->left,lvl,employers,Time,availableat);
     unsigned long int a=employeegrade(right,lvl,employers);
+
+    SkillNode*left=best_condidate(node->left,lvl,employers,Time,availableat);
     unsigned long int b=employeegrade(left,lvl,employers);
     unsigned long int c;
+
     if (availableat[node->id] <= Time)   
     {
         c=employeegrade(node,lvl,employers);
@@ -353,9 +371,9 @@ else
 }
 
 }
+ */
 
-
-SkillNode* skillDeleteNode(SkillNode* root, int lvl,int id) {
+/* SkillNode* skillDeleteNode(SkillNode* root, int lvl,int id) {
 
     if (root == NULL)
         return root;
@@ -369,7 +387,7 @@ SkillNode* skillDeleteNode(SkillNode* root, int lvl,int id) {
     else if (lvl==root->lvl && id > root->id)
         root->right = skillDeleteNode(root->right,lvl,id);
     else if (lvl==root->lvl && id < root->id)
-        root->right =skillDeleteNode(root->left,lvl,id);
+        root->left =skillDeleteNode(root->left,lvl,id);
     else {
         if ((root->left == NULL) || (root->right == NULL)) {
             SkillNode* temp = root->left ? root->left : root->right;
@@ -415,4 +433,106 @@ SkillNode* skillDeleteNode(SkillNode* root, int lvl,int id) {
     }
 
     return root;
+}
+ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+int intgetHeight(AVLNode* node) {
+    if (node == NULL)
+        return 0;
+    return node->height;
+}
+
+int intgetBalance(AVLNode* node) {
+    if (node == NULL)
+        return 0;
+    return intgetHeight(node->left) - intgetHeight(node->right);
+}
+
+AVLNode* intcreateNode(int data) {
+    AVLNode* newNode = (AVLNode*)malloc(sizeof(AVLNode));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->height = 1;
+    return newNode;
+}
+
+AVLNode* introtateRight(AVLNode* y) {
+    AVLNode* x = y->left;
+    AVLNode* T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(intgetHeight(y->left), intgetHeight(y->right)) + 1;
+    x->height = max(intgetHeight(x->left), intgetHeight(x->right)) + 1;
+
+    return x;
+}
+
+AVLNode* introtateLeft(AVLNode* x) {
+    AVLNode* y = x->right;
+    AVLNode* T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = max(intgetHeight(x->left), intgetHeight(x->right)) + 1;
+    y->height = max(intgetHeight(y->left), intgetHeight(y->right)) + 1;
+
+    return y;
+}
+
+AVLNode* intinsertNode(AVLNode* root, int data) {
+    if (root == NULL)
+        return intcreateNode(data);
+
+    if (data < root->data)
+        root->left = intinsertNode(root->left, data);
+    else if (data > root->data)
+        root->right = intinsertNode(root->right, data);
+    else
+        return root;
+
+    root->height = 1 + max(intgetHeight(root->left), intgetHeight(root->right));
+
+    int balance = intgetBalance(root);
+
+    if (balance > 1 && data < root->left->data)
+        return introtateRight(root);
+
+    if (balance < -1 && data > root->right->data)
+        return introtateLeft(root);
+
+    if (balance > 1 && data > root->left->data) {
+        root->left = introtateLeft(root->left);
+        return introtateRight(root);
+    }
+
+    if (balance < -1 && data < root->right->data) {
+        root->right = introtateRight(root->right);
+        return introtateLeft(root);
+    }
+
+    return root;
+}
+
+void intinorderTraversal(AVLNode* root) {
+    if (root != NULL) {
+        intinorderTraversal(root->left);
+        printf("%d ", root->data);
+        intinorderTraversal(root->right);
+    }
+}
+
+void intfreeTree(AVLNode* root) {
+    if (root != NULL) {
+        intfreeTree(root->left);
+        intfreeTree(root->right);
+        free(root);
+    }
 }

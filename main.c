@@ -162,7 +162,7 @@ for (int i=0;i<M;i++)
     projects[i].grad=grade(projects[i],0);
 }
 
-SkillNode **skilltree=(SkillNode**)malloc(S*sizeof(SkillNode**));
+/* SkillNode **skilltree=(SkillNode**)malloc(S*sizeof(SkillNode**));
 
 for(int k=0;k<S;k++){
     skilltree[k]=NULL;
@@ -179,19 +179,54 @@ for(int i=0;i<N;i++)
         root=insertSkillNode(root,i,list[j].level);
         skilltree[ip]=root;
     }
-} 
+}  */
 
+int * number_of_developers=(int*)malloc(S*sizeof(int));//an array that stores the number of developeres for each skill
+for (int k=0;k<S;k++) number_of_developers[k]=0;
+for (int k=0;k<N;k++) 
+{
+    for (int i=0;i<employers[k].nskils;i++)
+    {
+        number_of_developers[employers[k].skilles[i].skill]+=1;
+    }
+}
+dev** globalskills=(dev**)malloc(S*sizeof(dev*));//an array of arrays that store foe each skill all the contributeres that have this skill
+for (int k=0;k<S;k++)
+{
+    globalskills[k]=(dev*)malloc(number_of_developers[k]*sizeof(dev));
+}
+int*temp=(int*)malloc(S*sizeof(int));//an array  that keeps track of the lenth of each array of the skills
+for(int j=0;j<S;j++) temp[j]=0;
+for(int i=0;i<N;i++)
+{
+    for (int k=0;k<employers[i].nskils;k++)
+    {
+        globalskills[employers[i].skilles[k].skill][temp[employers[i].skilles[k].skill]].id=employers[i].id;
+        globalskills[employers[i].skilles[k].skill][temp[employers[i].skilles[k].skill]].lvl=employers[i].skilles[k].level;
+        temp[employers[i].skilles[k].skill]+=1;
+    }
+}
+free(temp);
+
+for (int k=0;k<S;k++)
+{
+    devmergeSort(globalskills[k],0,number_of_developers[k]-1);
+}
+
+//starting solving the probleme
+int breakpoint=0;
 delevered*deleveredprojects=(delevered*)malloc(M*sizeof(delevered));//A list of delevered projects
 int D=0;//The number deleveres projects
 int finale_score=0;
 int Time=0;//the numbere of days 
 
-int *availableat=(int*)malloc(N*sizeof(int));
-
+int *availableat=(int*)malloc(N*sizeof(int));//an array that keep track of the availabality of each employer
 for (int k=0;k<N;k++) availableat[k]=-1;
 
+//for (int k=0;k<M;k++) printf("%lld ",projects[k].grad);
 while(true)
 {
+    if(breakpoint==2000) break;
    for (int k=0;k<M;k++)
     {
         projects[k].grad=grade(projects[k],Time);
@@ -212,9 +247,12 @@ while(true)
         test.prjID=strbinarySearch(listproj,0,M-1,prj0.name);
         test.devIDs=(int *)malloc(n*sizeof(int));
         test.ndev=n;
+        test.starting_day=Time;
+        test.days=days;
         mentored upgrade[N];
-        int u=0;//counter of the number of employeres how will upgrade there lvl
+        int u=0;//counter of the number of employeres hwo will upgrade there lvl
         int c=0;//counter 
+        AVLNode*cureantly_selected=NULL;
         for(int i=0;i<n;i++)
         {
             int mentorbool=0;//if the skill can be mentored
@@ -222,12 +260,17 @@ while(true)
             int lvl=arr[i].level;
 
             if (mentorship[ip]>=lvl)
-                {mentorbool=1;
-                lvl-=1;}
-            SkillNode*root=skilltree[ip];
-            SkillNode *org=best_condidate(root,lvl,employers,Time,availableat);
-            if (org==NULL) break;
-            SkillNode target=*org;
+                {
+                    mentorbool=1;
+                    lvl-=1;
+                } 
+/*             SkillNode*root=skilltree[ip];
+            SkillNode *org=best_condidate(root,lvl,employers,Time,availableat); */
+            dev *skillarr=globalskills[ip];
+            int index=best_dev(skillarr,lvl,employers,Time,availableat,number_of_developers[ip],cureantly_selected);
+            if (index==-1) break;
+
+            dev target=skillarr[index];
 
             if (mentorbool==1)
             {
@@ -245,17 +288,17 @@ while(true)
                 upgrade[u].ip=ip;
                 upgrade[u].lvl=target.lvl;
                 u++;   
-            }
+            } 
             for (int k=0;k<employers[target.id].nskils;k++)
             {
                 int a=employers[target.id].skilles[k].skill;//the id of the skill
                 mentorship[a]=max(employers[target.id].skilles[k].level,mentorship[a]);//adding the skilles of the developer to the skilles that can be mentored
-            } 
- 
+            }  
+            cureantly_selected=intinsertNode(cureantly_selected,target.id);
             test.devIDs[c]=target.id;
             c++;
         }
-
+        intfreeTree(cureantly_selected);
         if (c==n)
         {
             for(int k=0;k<test.ndev;k++)
@@ -264,12 +307,11 @@ while(true)
             }
             for(int k=0;k<u;k++)
             {
-                skilltree[upgrade[k].ip]= skillDeleteNode(skilltree[upgrade[k].ip],upgrade[k].lvl,upgrade[k].id);
-                skilltree[upgrade[k].ip]= insertSkillNode(skilltree[upgrade[k].ip],upgrade[k].id,upgrade[k].lvl+1);
-            }
+                Upgrade(globalskills[upgrade[k].ip],upgrade[k],number_of_developers[upgrade[k].ip]);
+            } 
             projects[p].delevered=1;
             deleveredprojects[D]=test;
-            finale_score += min(prj0.score,prj0.score+prj0.best_befor-(Time+prj0.days));
+            finale_score += min(prj0.score,max(0,prj0.score+prj0.best_befor-(Time+prj0.days)));
             D++;
         }
         free(mentorship);
@@ -280,8 +322,10 @@ while(true)
         if ( min > availableat[i] && availableat[i] >= Time+1)
             min=availableat[i];
     }
-    if (min==1000000000) min =Time+1;
+    if (min==1000000000) min =Time+1; 
+    if(min==Time+1) breakpoint++;
     Time=min ;
+    
 }
 /* for(int k=0;k<D;k++)
 {
@@ -290,9 +334,33 @@ while(true)
     {
         printf("%s\n",devnames[deleveredprojects[k].devIDs[n]]);
     }
-}   */
+}   */ 
 printf("%d\n",finale_score);
-printf("%lld",SC);
+printf("%lld\n",SC);
+
+
+int *testavailable=(int *)malloc(N*sizeof(int));
+for (int k=0;k<N;k++) testavailable[k]=-1;
+for (int i=0;i<D;i++)
+{
+    for (int k=0;k<deleveredprojects[i].ndev;k++)
+    {
+        if (testavailable[deleveredprojects[i].devIDs[k]] <= deleveredprojects[i].starting_day) 
+            testavailable[deleveredprojects[i].devIDs[k]]=deleveredprojects[i].starting_day+deleveredprojects[i].days;
+        else 
+            printf("Testing failled !!!%d \n",i);
+        for(int j=k+1;j<deleveredprojects[i].ndev;j++)
+        {
+            if(deleveredprojects[i].devIDs[j]==deleveredprojects[i].devIDs[k]) 
+            {
+                printf("There is two motherefuckeres !!%s \n",listproj[deleveredprojects[i].prjID]);
+                break;
+            }
+        }
+    }
+} 
+
+
 
 // freee everything !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 return 0;

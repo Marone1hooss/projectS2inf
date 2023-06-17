@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include<string.h>
 #include"sorting.h"
+
 void sklmerge(skill* arr, int left, int mid, int right) {
     int i, j, k;
     int n1 = mid - left + 1;
@@ -269,6 +270,164 @@ int Max(int a,int b)
     else return b;
 }
 
+void devmerge(dev arr[], int left, int mid, int right) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    // Create temporary arrays
+    dev leftArr[n1], rightArr[n2];
+
+    // Copy data to temporary arrays
+    for (i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        rightArr[j] = arr[mid + 1 + j];
+
+    // Merge the temporary arrays back into arr[]
+    i = 0;
+    j = 0;
+    k = left;
+
+    while (i < n1 && j < n2) {
+        if (leftArr[i].lvl >= rightArr[j].lvl) { // Compare in descending order
+            arr[k] = leftArr[i];
+            i++;
+        } else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of leftArr[], if any
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of rightArr[], if any
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
+
+void devmergeSort(dev arr[], int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        // Sort the left and right halves
+        devmergeSort(arr, left, mid);
+        devmergeSort(arr, mid + 1, right);
+
+        // Merge the sorted halves
+        devmerge(arr, left, mid, right);
+    }
+}
+
+int binarySearch(dev arr[], int left, int right, int target) {
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid].lvl == target) {
+            return mid; // Found the target
+        } else if (arr[mid].lvl < target) {
+            right = mid - 1; // Target is in the left half
+        } else {
+            left = mid + 1; // Target is in the right half
+        }
+    }
+
+    return -1; // Target not found
+}
+
+int findSmallestGreaterOrEqual(dev arr[], int size, int N) {
+    int left = 0;
+    int right = size - 1;
+    int result = -1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid].lvl >= N) {
+            result = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return result;
+}
+
+int intfindNode(AVLNode* node, int key) {
+    if (node == NULL)
+        return -1;
+    if (key < node->data)
+        return intfindNode(node->left, key);
+    else if (key > node->data)
+        return intfindNode(node->right, key);
+    else
+        return node->data;
+}
+
+
+unsigned long  int employeegrade(dev temp,int lvl,employee*employers)
+{
+
+    return employers[temp.id].nskils*(temp.lvl-lvl);
+}
+
+int best_dev(dev* list, int lvl,employee*employers,int Time,int *availableat,int number_of_employeres,AVLNode*curently_selected)
+{
+    if (lvl>list[0].lvl) return-1;
+    int index=findSmallestGreaterOrEqual(list,number_of_employeres,lvl);
+    while(index>0 && ( list[index-1].lvl == list[index].lvl ) ) index--;
+    while(index<number_of_employeres-1 && ( list[index+1].lvl > lvl ) ) index++;
+
+    if (list[index].lvl==lvl && availableat[list[index].id]<=Time && intfindNode(curently_selected,list[index].id)==-1) return index; 
+    int temp=-1;
+    int min =1000000000;
+
+    for (int k=index;k>=0;k--)
+    {
+        if (employeegrade(list[k],lvl,employers)<min && availableat[list[k].id]<=Time && intfindNode(curently_selected,list[k].id)==-1)
+        {
+            temp=k;
+            min=employeegrade(list[k],lvl,employers);
+        }
+    }
+    return temp;
+}
+
+void Upgrade(dev*list,mentored target,int n )
+{
+    int index=binarySearch(list,0,n-1,target.lvl);
+    int i=0;
+    int left=index;
+    int right=index;
+    while(list[left].id!=target.id && list[right].id!=target.id)
+    {
+        if(list[left-1].lvl==target.lvl) left--;
+        if(list[right+1].lvl==target.lvl) right++;
+    }
+    if (list[left].id!=target.id) left=right;
+    index=left;
+
+    list[index].lvl++;
+    if (index>0)
+    {
+        if (list[index-1].lvl< target.lvl+1)
+        {
+            devmergeSort(list,0,n-1);
+        }
+    }
+}
+
+
 long long int grade(project prj,int time)
 {
     if (prj.delevered == 1) return -1;
@@ -276,7 +435,7 @@ long long int grade(project prj,int time)
     int n=prj.numbre_of_employeres;
     int best=prj.best_befor;
     int s=min(prj.score,Max(0,prj.score+best-(time+d)));
-    float grade=10/(n);
-    return ((long long int)(grade*10000));
+    if (s==0) return 0;
+    float grade=10000*s/(n*d);
+    return ((long long int)(grade));
 }
-
