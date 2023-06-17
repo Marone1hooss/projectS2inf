@@ -11,15 +11,14 @@ int main(int argc,char*argv)
 FILE *fl;
 
 
-fl = fopen("input3.txt","r");
+fl = fopen("input4.txt","r");
 
 if(fl == NULL)
    {
       printf("Error!");   
       exit(1);             
    }
-
-long long int SC=0;
+int holidays=200;
 int N,M;
 fscanf(fl,"%d %d",&N,&M);
 
@@ -54,6 +53,7 @@ for (int i =0;i<N;i++)
     test1.nskils=n;
     test1.skilles=(skill*)malloc(n*sizeof(skill));
     test1.strskills=(char**)malloc(n*sizeof(char**));
+    
     for (int k=0;k<n;k++){test1.strskills[k]=(char*)malloc((21)*sizeof(char));}
     for (int j=0;j<n;j++)
     {
@@ -111,7 +111,7 @@ for (int i =0;i<M;i++)
     {
         listproj[i][k]=name[k];
     }
-    SC+=score;
+
 
     project test1;
     test1.name=(char*)malloc(strlen(name)*sizeof(char)+1);
@@ -136,6 +136,7 @@ for (int i =0;i<M;i++)
     //sklmergeSort(test1.requirement,0,test1.numbre_of_employeres-1);
     projects[i]=test1;
 }
+
 strmergeSort(devnames,0,N-1);
 strmergeSort(listproj,0,M-1);
 
@@ -171,19 +172,26 @@ for (int k=0;k<N;k++)
         number_of_developers[employers[k].skilles[i].skill]+=1;
     }
 }
-dev** globalskills=(dev**)malloc(S*sizeof(dev*));//an array of arrays that store foe each skill all the contributeres that have this skill
+dev** globalskills=(dev**)malloc(S*sizeof(dev*));//an array of arrays that store for each skill all the contributeres that have this skill
+
 for (int k=0;k<S;k++)
 {
     globalskills[k]=(dev*)malloc(N*sizeof(dev));
+    for(int i=0;i<N;i++)
+    {
+        globalskills[k][i].id=i;
+        globalskills[k][i].lvl=0;
+    }
 }
+
 int*temp=(int*)malloc(S*sizeof(int));//an array  that keeps track of the lenth of each array of the skills
 for(int j=0;j<S;j++) temp[j]=0;
 for(int i=0;i<N;i++)
 {
     for (int k=0;k<employers[i].nskils;k++)
     {
-        globalskills[employers[i].skilles[k].skill][temp[employers[i].skilles[k].skill]].id=employers[i].id;
-        globalskills[employers[i].skilles[k].skill][temp[employers[i].skilles[k].skill]].lvl=employers[i].skilles[k].level;
+        globalskills[employers[i].skilles[k].skill][employers[i].id].id=employers[i].id;
+        globalskills[employers[i].skilles[k].skill][employers[i].id].lvl=employers[i].skilles[k].level;
         temp[employers[i].skilles[k].skill]+=1;
     }
 }
@@ -191,7 +199,7 @@ free(temp);
 
 for (int k=0;k<S;k++)
 {
-    devmergeSort(globalskills[k],0,number_of_developers[k]-1);
+    devmergeSort(globalskills[k],0,N-1);
 }
 
 //starting solving the probleme
@@ -245,8 +253,6 @@ while(true)
                     mentorbool=1;
                     lvl-=1;
                 } 
-/*             SkillNode*root=skilltree[ip];
-            SkillNode *org=best_condidate(root,lvl,employers,Time,availableat); */
             dev *skillarr=globalskills[ip];
             int index=best_dev(skillarr,lvl,employers,Time,availableat,number_of_developers[ip],cureantly_selected);
             if (index==-1) break;
@@ -317,7 +323,7 @@ while(true)
     }
 }   */ 
 printf("%d\n",finale_score);
-printf("%lld\n",SC);
+
 
 
 /* int *testavailable=(int *)malloc(N*sizeof(int));
@@ -334,12 +340,12 @@ for (int i=0;i<D;i++)
         {
             if(deleveredprojects[i].devIDs[j]==deleveredprojects[i].devIDs[k]) 
             {
-                printf("There is two motherefuckeres !!%s \n",listproj[deleveredprojects[i].prjID]);
+                printf("There is two in the same project!!%s \n",listproj[deleveredprojects[i].prjID]);
                 break;
             }
         }
     }
-}  */
+}   */
 
 
 
