@@ -378,7 +378,7 @@ int intfindNode(AVLNode* node, int key) {
 unsigned long  int employeegrade(dev temp,int lvl,employee*employers)
 {
 
-    return employers[temp.id].nskils*(temp.lvl-lvl+1);
+    return employers[temp.id].nskils*(temp.lvl-lvl);
 }
 
 int best_dev(dev* list, int lvl,employee*employers,int Time,int *availableat,int number_of_employeres,AVLNode*curently_selected)
@@ -427,15 +427,32 @@ void Upgrade(dev*list,mentored target,int n )
     }
 }
 
+long int pow(long int x, int n)
+{
+    if (n==0) return 1;
+    else if (n==1) return x;
+    else {
+        for (int i=1;i<n;i++)
+        {
+            x*=x;
+        }
+        return x;
+    }
+}
 
-long long int grade(project prj,int time)
+long long int grade(project prj,int time,int test[3])
 {
     if (prj.delevered == 1) return -1;
-    int d=prj.days;
-    int n=prj.numbre_of_employeres;
-    int best=prj.best_befor;
-    int s=min(prj.score,Max(0,prj.score+best-(time+d)));
+    long int d=prj.days;
+    long int n=prj.numbre_of_employeres;
+    long int best=prj.best_befor;
+    long int s=min(prj.score,Max(0,prj.score+best-(time+d)));
     if (s==0) return 0;
-    float grade=10000*s/(n*d);
+    s=pow(s,test[0]);
+    n=pow(n,test[1]);
+    d=pow(d,test[2]);
+    float grade=100000*s/(n*d);
+
+
     return ((long long int)(grade));
 }

@@ -62,7 +62,7 @@ void intmergeSort(int arr[], int left, int right);
 void strmergeSort(char **arr, int left, int right) ;
 int strbinarySearch(char** arr, int left, int right, char *target) ;
 void prjmergeSort(project* arr, int left, int right);
-long long int grade(project prj,int time);
+long long int grade(project prj,int time,int test[]);
 void sklmergeSort(skill* arr, int left, int right);
 int max(int a,int b);
 int min(int a,int b);
