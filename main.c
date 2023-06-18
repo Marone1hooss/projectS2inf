@@ -8,20 +8,19 @@
 int main(int argc,char*argv)
 {
 
-char**INPUT[5]={"input1.txt","input.txt","input3.txt","input2exp.txt","input4.txt"};
 
-for(int _ =0;_<5;_++)
-{
+
+
 
 FILE *fl;
-fl = fopen(INPUT[_],"r");
+fl = fopen("input4.txt","r");
 
 if(fl == NULL)
    {
       printf("Error!");   
       exit(1);             
    }
-int holidays=200;
+int holidays=250;
 int N,M;
 fscanf(fl,"%d %d",&N,&M);
 
@@ -145,14 +144,8 @@ for (int i =0;i<M;i++)
 strmergeSort(devnames,0,N-1);
 strmergeSort(listproj,0,M-1);
 
+for(int i=0;i<M;i++) projects[i].id=strbinarySearch(listproj,0,M-1 , projects[i].name);
 
-
-////////////////////////////////////// THE END OF READING THE INPUT///////////////////////////////////////////////////////
-
-int Arr[9][3] ={{1,1,1},{0,1,0},{0,0,0},{1,0,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,1}};
-
-for (int t=0;t<9;t++)
-{
 for (int i=0;i<N;i++)
 {
     employers[i].id=strbinarySearch(devnames,0,N-1, employers[i].name);
@@ -162,6 +155,7 @@ for (int i=0;i<N;i++)
     }
     free(employers[i].strskills);
 }
+//sorting the contributeres by theire ID 
 employee*employers1=(employee*)malloc(N*sizeof(employee));
 for(int i=0;i<N;i++)
 {
@@ -170,10 +164,17 @@ for(int i=0;i<N;i++)
 free(employers);
 employers=employers1;
 
+////////////////////////////////////// THE END OF READING THE INPUT///////////////////////////////////////////////////////
+
+int Arr[9][3] ={{1,1,1},{0,1,0},{0,0,0},{1,0,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,1}};
+
+for (int t=0;t<9;t++)
+{
+
+
 for (int i=0;i<M;i++)
 {
-    projects[i].id=strbinarySearch(listproj,0,M-1 , projects[i].name);
-    projects[i].delevered=-1;
+    projects[i].delevered=0;
 }
 
 dev** globalskills=(dev**)malloc(S*sizeof(dev*));//an array of arrays that store for each skill all the contributeres that have this skill
@@ -188,18 +189,16 @@ for (int k=0;k<S;k++)
     }
 }
 
-int*temp=(int*)malloc(S*sizeof(int));//an array  that keeps track of the lenth of each array of the skills
-for(int j=0;j<S;j++) temp[j]=0;
+
 for(int i=0;i<N;i++)
 {
     for (int k=0;k<employers[i].nskils;k++)
     {
         globalskills[employers[i].skilles[k].skill][employers[i].id].id=employers[i].id;
         globalskills[employers[i].skilles[k].skill][employers[i].id].lvl=employers[i].skilles[k].level;
-        temp[employers[i].skilles[k].skill]+=1;
     }
 }
-free(temp);
+
 
 for (int k=0;k<S;k++)
 {
@@ -226,7 +225,7 @@ for (int k=0;k<N;k++) availableat[k]=-1;
 while(true)
 {
     if(breakpoint==holidays) break;
-   for (int k=0;k<M;k++)
+    for (int k=0;k<M;k++)
     {
         projects[k].grad=grade(projects[k],Time,Arr[t]);//The association of the grades for each project
     }
@@ -332,7 +331,7 @@ while(true)
         printf("%s\n",devnames[deleveredprojects[k].devIDs[n]]);
     }
 }   */ 
-printf("%s :%d\n",INPUT[_], finale_score);
+printf("%d\n", finale_score);
 
 
 /////////////////////////////////////// TESTING THE VALIDITY OF THE OUPUT////////////////////////////////////////////
@@ -365,18 +364,18 @@ for(int i=0;i<S;i++)
 free(globalskills);
 for(int i=0;i<D;i++) free(deleveredprojects[i].devIDs);
 free(deleveredprojects);
-free(availableat);
+free(availableat); 
 }
-for (int i=0;i<M;i++) free(projects[i].requirement);
+/* for (int i=0;i<M;i++) free(projects[i].requirement);
 free(projects);
 for (int i=0;i<N;i++) free(employers[i].skilles);
 free(employers);
 
 free(listproj);
 free(devnames);
-free(listskills);
+free(listskills); */
 
-}
+
 
 // freee everything !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 return 0;
