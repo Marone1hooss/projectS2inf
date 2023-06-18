@@ -385,7 +385,6 @@ int best_dev(dev* list, int lvl,employee*employers,int Time,int *availableat,int
 {
     if (lvl>list[0].lvl) return-1;
     int index=findSmallestGreaterOrEqual(list,number_of_employeres,lvl);
-   // while(index>0 && ( list[index-1].lvl == list[index].lvl ) ) index--;
     while(index<number_of_employeres-1 && ( list[index+1].lvl >= lvl ) ) index++;
 
     //if (list[index].lvl==lvl && availableat[list[index].id]<=Time && intfindNode(curently_selected,list[index].id)==-1) return index; 
@@ -406,15 +405,15 @@ int best_dev(dev* list, int lvl,employee*employers,int Time,int *availableat,int
 void Upgrade(dev*list,mentored target,int n )
 {
     int index=binarySearch(list,0,n-1,target.lvl);
-    int i=0;
     int left=index;
     int right=index;
-    while(list[left].id!=target.id && list[right].id!=target.id)
+    while(list[left].id!=target.id && list[right].id!=target.id )
     {
-        if(list[left-1].lvl==target.lvl) left--;
-        if(list[right+1].lvl==target.lvl) right++;
+        if(list[left-1].lvl==target.lvl && left>0) left--;
+        if(list[right+1].lvl==target.lvl && right<n-1) right++;
     }
     if (list[left].id!=target.id) left=right;
+    
     index=left;
 
     list[index].lvl++;

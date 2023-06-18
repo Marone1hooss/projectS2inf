@@ -10,19 +10,19 @@ int main(int argc,char*argv)
 
 
 
-
-
 FILE *fl;
-fl = fopen("input4.txt","r");
+fl = fopen("input3.txt","r");
 
 if(fl == NULL)
    {
       printf("Error!");   
       exit(1);             
    }
-int holidays=250;
+int holidays=2000;
 int N,M;
 fscanf(fl,"%d %d",&N,&M);
+//if (M < 1111 ) holidays=200;
+if (M > 11111) holidays=200;//if the number of projects is too big reduce holidays to reduce the complexity
 
 char ** devnames=(char**)malloc(N*sizeof(char*));
 for(int i=0;i<N;i++){devnames[i]=(char*)malloc(21*sizeof(char));}
@@ -72,8 +72,6 @@ for (int i =0;i<N;i++)
         if (strfindNode(root,skillname)==NULL)
         {
             root=strinsertNode(root,skillname);
-                        if(N==800 && M==10000) 
-            holidays=2000; 
         for (int k=0;k<20+1;k++)
         {
             listskills0[S][k]=skillname[k];
@@ -137,7 +135,7 @@ for (int i =0;i<M;i++)
         testskill.skill=strbinarySearch(listskills,0,S-1,skillname);
         test1.requirement[j]=testskill;
     }
-    //sklmergeSort(test1.requirement,0,test1.numbre_of_employeres-1);
+    sklmergeSort(test1.requirement,0,test1.numbre_of_employeres-1);
     projects[i]=test1;
 }
 
@@ -164,19 +162,33 @@ for(int i=0;i<N;i++)
 free(employers);
 employers=employers1;
 
-////////////////////////////////////// THE END OF READING THE INPUT///////////////////////////////////////////////////////
+////////////////////////////////////// THE END OF READING THE INPUT ///////////////////////////////////////////////////////
 
-int Arr[9][3] ={{1,1,1},{0,1,0},{0,0,0},{1,0,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,1}};
+delevered *finaleresult;
+int F=0;
+int Maxscor =-1;
 
-for (int t=0;t<9;t++)
+int Arr[9][3] ={{1,1,1},{1,0,1},{0,1,0},{0,0,0},{1,0,0},{0,0,1},{1,1,0},{0,1,1}};
+//{{1,1,1},{0,1,0},{0,0,0},{1,0,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,1}};
+
+int TEST=9;
+if (max(N,M)>9999) TEST=3;
+for (int t=0;t<TEST;t++)
 {
-
-
 for (int i=0;i<M;i++)
 {
     projects[i].delevered=0;
 }
 
+int * number_of_developers=(int*)malloc(S*sizeof(int));//an array that stores the number of developeres for each skill
+for (int k=0;k<S;k++) number_of_developers[k]=0;
+for (int k=0;k<N;k++) 
+{
+    for (int i=0;i<employers[k].nskils;i++)
+    {
+        number_of_developers[employers[k].skilles[i].skill]+=1;
+    }
+}
 dev** globalskills=(dev**)malloc(S*sizeof(dev*));//an array of arrays that store for each skill all the contributeres that have this skill
 
 for (int k=0;k<S;k++)
@@ -209,11 +221,7 @@ for (int k=0;k<S;k++)
 
 //////////////////////////////////////////starting solving the probleme//////////////////////////////////////////////////////////////////
 
-
-
-
-
-int breakpoint=0;// A CONTER OF THE NUMBER OF HOLIDAYS 
+int breakpoint=0;// A COUNTER OF THE NUMBER OF HOLIDAYS 
 delevered*deleveredprojects=(delevered*)malloc(M*sizeof(delevered));//A list of delevered projects
 int D=0;//The number deleveres projects
 int finale_score=0;
@@ -234,7 +242,8 @@ while(true)
     if (projects[0].delevered!=0) break;//All the projects are delevered
     for(int p=0;p<M;p++)
     {
-        int*mentorship=malloc(S*sizeof(int));//an array that contain the maximum score that can be mentored for each skill
+
+        int*mentorship=malloc(S*sizeof(int));//an array that contains the maximum score that can be mentored for each skill
         for(int k=0;k<S;k++) mentorship[k]=0;
         project prj0=projects[p];
         if (prj0.delevered!=0) break ;
@@ -259,11 +268,18 @@ while(true)
 
             if (mentorship[ip]>=lvl)//if there is an mentore
                 {
-                    mentorbool=1;
-                    lvl-=1;
+                     if(lvl>1 || N < 1000)//if the numbre of contributeres is highre than 1000 dont upgrade the lvl 0
+                    {  
+                        mentorbool=1;
+                        lvl-=1;
+                    }
+                    
                 } 
             dev *skillarr=globalskills[ip];
-            int index=best_dev(skillarr,lvl,employers,Time,availableat,N,cureantly_selected);
+            int index=-1;
+            if (lvl!=0)  index=best_dev(skillarr,lvl,employers,Time,availableat,number_of_developers[ip],cureantly_selected);
+            else  index=best_dev(skillarr,lvl,employers,Time,availableat,N,cureantly_selected); 
+
             if (index==-1) break;//there is no one to do the skille 
 
             dev target=skillarr[index];
@@ -303,7 +319,13 @@ while(true)
             }
             for(int k=0;k<u;k++)
             {
-                Upgrade(globalskills[upgrade[k].ip],upgrade[k],N);
+                 if (upgrade[k].lvl!=0) 
+                    Upgrade(globalskills[upgrade[k].ip],upgrade[k],number_of_developers[upgrade[k].ip]);
+                else 
+                { 
+                    Upgrade(globalskills[upgrade[k].ip],upgrade[k],N);
+                    number_of_developers[upgrade[k].ip]+=1;
+                }
             } 
             projects[p].delevered=1;
             deleveredprojects[D]=test;
@@ -312,6 +334,8 @@ while(true)
         }
         free(mentorship);
     }
+
+    //Moving on time to the closeste day that one of the working contributers will finish 
     int  min=1000000000;
     for (int i=0;i<N;i++)
     {
@@ -323,21 +347,14 @@ while(true)
     Time=min ;
     
 }
-/* for(int k=0;k<D;k++)
-{
-    printf("%s\n",listproj[deleveredprojects[k].prjID]);
-    for (int n=0;n<deleveredprojects[k].ndev;n++)
-    {
-        printf("%s\n",devnames[deleveredprojects[k].devIDs[n]]);
-    }
-}   */ 
+
 printf("%d\n", finale_score);
 
 
 /////////////////////////////////////// TESTING THE VALIDITY OF THE OUPUT////////////////////////////////////////////
 
 
-/* int *testavailable=(int *)malloc(N*sizeof(int));
+/*  int *testavailable=(int *)malloc(N*sizeof(int));
 for (int k=0;k<N;k++) testavailable[k]=-1;
 for (int i=0;i<D;i++)
 {
@@ -356,24 +373,47 @@ for (int i=0;i<D;i++)
             }
         }
     }
-}    */
+}      */
 for(int i=0;i<S;i++)
 {
     free(globalskills[i]);
 }
 free(globalskills);
-for(int i=0;i<D;i++) free(deleveredprojects[i].devIDs);
-free(deleveredprojects);
-free(availableat); 
+
+if (finale_score<=Maxscor)
+{
+    for(int i=0;i<D;i++) free(deleveredprojects[i].devIDs);
+    free(deleveredprojects);
+    free(availableat); 
 }
-/* for (int i=0;i<M;i++) free(projects[i].requirement);
+else 
+{
+    finaleresult=deleveredprojects;
+    Maxscor=finale_score;
+    F=D;
+}
+
+
+}
+
+/* for(int k=0;k<F;k++)
+{
+    printf("%s\n",listproj[finaleresult[k].prjID]);
+    for (int n=0;n<finaleresult[k].ndev;n++)
+    {
+        printf("%s\n",devnames[finaleresult[k].devIDs[n]]);
+    }
+}    */
+printf("%d\n",Maxscor);
+printf("finish");
+for (int i=0;i<M;i++) free(projects[i].requirement);
 free(projects);
 for (int i=0;i<N;i++) free(employers[i].skilles);
 free(employers);
 
 free(listproj);
 free(devnames);
-free(listskills); */
+free(listskills); 
 
 
 
