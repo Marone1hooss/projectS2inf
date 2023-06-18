@@ -5,13 +5,16 @@
 #include"sorting.h"
 #include"AVL.h"
 
-int main(int argc,char*argv)
+int main(int argc,char**argv)
 {
 
-
+/* if  (argc==1){prinf("ENTER THE NAME OF THE FILE !!!");
+return 0;} 
+if (argc >2) {prinf("TWO MANY ARGUMENTS!!!!!");
+return 0;} */
 
 FILE *fl;
-fl = fopen("input3.txt","r");
+fl = fopen(argv[1],"r");
 
 if(fl == NULL)
    {
@@ -21,8 +24,7 @@ if(fl == NULL)
 int holidays=2000;
 int N,M;
 fscanf(fl,"%d %d",&N,&M);
-//if (M < 1111 ) holidays=200;
-if (M > 11111) holidays=200;//if the number of projects is too big reduce holidays to reduce the complexity
+if (M > 11111  ) holidays=500;//if the number of projects is too big reduce holidays to reduce the complexity
 
 char ** devnames=(char**)malloc(N*sizeof(char*));
 for(int i=0;i<N;i++){devnames[i]=(char*)malloc(21*sizeof(char));}
@@ -268,13 +270,21 @@ while(true)
 
             if (mentorship[ip]>=lvl)//if there is an mentore
                 {
-                     if(lvl>1 || N < 1000)//if the numbre of contributeres is highre than 1000 dont upgrade the lvl 0
+    
+
+                    if(lvl!=1 )
                     {  
                         mentorbool=1;
                         lvl-=1;
                     }
+                    else if ( N < 1000 || M < 10000 )//if the numbre of contributeres or projects is very high dont upgrade the lvl 0
+                    {
+                        mentorbool=1;
+                        lvl-=1;
+                    }
                     
-                } 
+                    
+                }  
             dev *skillarr=globalskills[ip];
             int index=-1;
             if (lvl!=0)  index=best_dev(skillarr,lvl,employers,Time,availableat,number_of_developers[ip],cureantly_selected);
@@ -319,7 +329,7 @@ while(true)
             }
             for(int k=0;k<u;k++)
             {
-                 if (upgrade[k].lvl!=0) 
+                if (upgrade[k].lvl!=0) 
                     Upgrade(globalskills[upgrade[k].ip],upgrade[k],number_of_developers[upgrade[k].ip]);
                 else 
                 { 
@@ -348,7 +358,7 @@ while(true)
     
 }
 
-printf("%d\n", finale_score);
+
 
 
 /////////////////////////////////////// TESTING THE VALIDITY OF THE OUPUT////////////////////////////////////////////
@@ -374,6 +384,7 @@ for (int i=0;i<D;i++)
         }
     }
 }      */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 for(int i=0;i<S;i++)
 {
     free(globalskills[i]);
@@ -396,14 +407,25 @@ else
 
 }
 
-/* for(int k=0;k<F;k++)
+
+FILE *file = fopen("Output.txt", "w");
+
+if (file == NULL) {
+    printf("Failed to open the file.\n");
+    return 1;
+}
+
+if (file==NULL) {printf("file can't be found!!!!!");return 0;}
+fprintf(file,"%d\n",F);
+for(int k=0;k<F;k++)
 {
-    printf("%s\n",listproj[finaleresult[k].prjID]);
+    fprintf(file,"%s\n",listproj[finaleresult[k].prjID]);
     for (int n=0;n<finaleresult[k].ndev;n++)
     {
-        printf("%s\n",devnames[finaleresult[k].devIDs[n]]);
-    }
-}    */
+        fprintf(file,"%s ",devnames[finaleresult[k].devIDs[n]]);
+    } 
+    fprintf(file,"\n");
+}  
 printf("%d\n",Maxscor);
 printf("finish");
 for (int i=0;i<M;i++) free(projects[i].requirement);
@@ -417,6 +439,5 @@ free(listskills);
 
 
 
-// freee everything !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 return 0;
 }

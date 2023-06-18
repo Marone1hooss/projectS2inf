@@ -377,17 +377,16 @@ int intfindNode(AVLNode* node, int key) {
 
 unsigned long  int employeegrade(dev temp,int lvl,employee*employers)
 {
-
-    return employers[temp.id].nskils*(temp.lvl-lvl);
+        return employers[temp.id].nskils*(temp.lvl-lvl);
 }
 
 int best_dev(dev* list, int lvl,employee*employers,int Time,int *availableat,int number_of_employeres,AVLNode*curently_selected)
 {
     if (lvl>list[0].lvl) return-1;
     int index=findSmallestGreaterOrEqual(list,number_of_employeres,lvl);
-    while(index<number_of_employeres-1 && ( list[index+1].lvl >= lvl ) ) index++;
 
-    //if (list[index].lvl==lvl && availableat[list[index].id]<=Time && intfindNode(curently_selected,list[index].id)==-1) return index; 
+    while(index<number_of_employeres-1 && ( list[index+1].lvl >= lvl)) index++;
+    if (list[index].lvl==lvl && availableat[list[index].id]<=Time && intfindNode(curently_selected,list[index].id)==-1) return index; 
     int temp=-1;
     int min =1000000000;
 
@@ -413,7 +412,7 @@ void Upgrade(dev*list,mentored target,int n )
         if(list[right+1].lvl==target.lvl && right<n-1) right++;
     }
     if (list[left].id!=target.id) left=right;
-    
+
     index=left;
 
     list[index].lvl++;
